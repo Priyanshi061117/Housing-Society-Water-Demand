@@ -1,0 +1,62 @@
+﻿group_id: "G017"
+problem_id: "MP071"
+
+data_issues:
+  leaking_column:
+    present: true
+    column: "meter_litres_next_morning"
+
+  unit_mixup:
+    present: true
+    column: "garden_area_m2"
+    group_value: "Tower A"
+    factor: 10
+
+  sentinel_value:
+    present: true
+    column: "supply_hours"
+    value: -999
+    count: 54
+
+  duplicate_rows:
+    present: true
+    count: 31
+
+  stuck_sensor:
+    present: false
+    column: null
+    start_date: null
+    end_date: null
+
+  target_typos:
+    present: true
+    count: 13
+
+  spelling_variants:
+    present: false
+    column: null
+    true_levels: null
+
+tracking:
+  experiment_name: null
+  best_run_id: null
+  registered_model_name: null
+  champion_version: null
+
+monitoring:
+  psi:
+    flats_occupied: null
+    temp_c: null
+    garden_area_m2: null
+    tank_level_morning_pct: null
+    leak_complaints: null
+    supply_hours: null
+  most_drifted_feature: null
+  mae_by_group:
+    'Tower A': null
+    'Tower B': null
+    'Tower C': null
+  worst_served_group: null
+  mae_v1_on_check: null
+  mae_v2_on_check: null
+  decision: null
