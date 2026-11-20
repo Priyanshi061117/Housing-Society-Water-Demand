@@ -36,7 +36,6 @@ data_issues:
     present: false
     column: null
     true_levels: null
-
 tracking:
   experiment_name: null
   best_run_id: null
