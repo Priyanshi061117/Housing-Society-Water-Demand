@@ -10,7 +10,7 @@ data_issues:
     present: true
     column: "garden_area_m2"
     group_value: "Tower A"
-    factor: 10
+    factor: 10.764
 
   sentinel_value:
     present: true
@@ -36,6 +36,7 @@ data_issues:
     present: false
     column: null
     true_levels: null
+
 tracking:
   experiment_name: null
   best_run_id: null
