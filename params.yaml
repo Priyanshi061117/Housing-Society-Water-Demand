@@ -1,0 +1,47 @@
+data:
+  train: data/raw/train.csv
+  later: data/raw/later.csv
+  holdout: data/raw/holdout_features.csv
+
+target: litres_per_day
+
+features:
+  numeric:
+    - flats_occupied
+    - temp_c
+    - garden_area_m2
+    - tank_level_morning_pct
+    - leak_complaints
+    - supply_hours
+  categorical:
+    - supply_source
+    - tower
+
+split:
+  test_size: 0.2
+  random_state: 42
+
+mlflow:
+  tracking_uri: sqlite:///mlflow.db
+  experiment_name: mp071-water-demand
+  registered_model_name: mp071-water-model
+
+model_path: models/model.joblib
+
+models:
+  - name: rf_small
+    type: random_forest
+    params:
+      n_estimators: 100
+      max_depth: 8
+  - name: rf_large
+    type: random_forest
+    params:
+      n_estimators: 300
+      max_depth: 14
+  - name: gbr
+    type: gradient_boosting
+    params:
+      n_estimators: 300
+      learning_rate: 0.05
+      max_depth: 3
