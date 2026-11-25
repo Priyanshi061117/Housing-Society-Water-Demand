@@ -1,0 +1,32 @@
+# Files Docker must NOT send into the image. The service only needs
+# requirements.txt, params.yaml, models/ and app/ (see the Dockerfile).
+
+# Git, DVC and CI
+.git
+.gitignore
+.dvc
+.dvcignore
+**/*.dvc
+.github
+
+# Python leftovers and virtual environments
+__pycache__
+**/*.pyc
+.pytest_cache
+.venv
+venv
+
+# Data, experiment tracking and reports (not needed to serve predictions)
+data
+mlflow.db
+mlruns
+mlartifacts
+reports
+predictions
+
+# Code and files the running service does not use
+src
+tests
+k8s
+*.md
+.DS_Store
