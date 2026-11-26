@@ -10,6 +10,10 @@ then open http://127.0.0.1:8000/docs to try it in the browser.
 from pathlib import Path
 from typing import Literal
 
+import json
+import logging
+import sys
+
 import joblib
 import pandas as pd
 import yaml
@@ -19,6 +23,10 @@ from pydantic import BaseModel, Field
 # Repository root. Building paths from here means the app works whichever
 # folder it is started from: a laptop, GitHub Actions, or /code in Docker.
 ROOT = Path(__file__).resolve().parent.parent
+
+# Structured JSON logging to stdout (Docker captures stdout automatically).
+logging.basicConfig(level=logging.INFO, stream=sys.stdout)
+logger = logging.getLogger("mp071-api")
 
 # The same settings file the training code reads, so the API and training
 # always agree on the model file and the feature names.
@@ -87,4 +95,14 @@ def predict(request: WaterDemandRequest):
     # One-row table with the columns in the same order as in training.
     row = pd.DataFrame([request.model_dump()], columns=FEATURES)
     litres = float(MODEL.predict(row)[0])
+
+    # Structured JSON log. Do not log personal or sensitive information.
+    log_record = {
+        "event": "prediction",
+        "tower": request.tower,
+        "prediction_litres_per_day": round(litres, 1),
+        "status": "success",
+    }
+    logger.info(json.dumps(log_record))
+
     return PredictionResponse(prediction=round(litres, 1))
