@@ -41,22 +41,22 @@ tracking:
   experiment_name: "mp071-water-demand"
   best_run_id: "cfde3bb161c04d3d820cc3d2121dbc46"
   registered_model_name: "mp071-water-model"
-  champion_version: 1
+  champion_version: 2
 
 monitoring:
   psi:
-    flats_occupied: null
-    temp_c: null
-    garden_area_m2: null
-    tank_level_morning_pct: null
-    leak_complaints: null
-    supply_hours: null
-  most_drifted_feature: null
+    flats_occupied: 5.4829
+    temp_c: 0.0168
+    garden_area_m2: 0.0446
+    tank_level_morning_pct: 0.0579
+    leak_complaints: 0.0451
+    supply_hours: 0.0096
+  most_drifted_feature: "flats_occupied"
   mae_by_group:
-    'Tower A': null
-    'Tower B': null
-    'Tower C': null
-  worst_served_group: null
-  mae_v1_on_check: null
-  mae_v2_on_check: null
-  decision: null
+    'Tower A': 4727.78
+    'Tower B': 15038.34
+    'Tower C': 4090.27
+  worst_served_group: "Tower B"
+  mae_v1_on_check: 10508.11
+  mae_v2_on_check: 4403.09
+  decision: "promote"
