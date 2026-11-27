@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mp071-api
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: mp071-api
+  template:
+    metadata:
+      labels:
+        app: mp071-api
+    spec:
+      containers:
+        - name: mp071-api
+          image: mp071-api:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 10
