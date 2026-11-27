@@ -1,3 +1,4 @@
+
 """Prediction service for MP071 - Housing Society Water Demand (Nagpur).
 
     POST /predict  -> litres of water the society will use in the day
@@ -24,9 +25,29 @@ from pydantic import BaseModel, Field
 # folder it is started from: a laptop, GitHub Actions, or /code in Docker.
 ROOT = Path(__file__).resolve().parent.parent
 
-# Structured JSON logging to stdout (Docker captures stdout automatically).
-logging.basicConfig(level=logging.INFO, stream=sys.stdout)
+
+# JSON logging formatter
+class JsonFormatter(logging.Formatter):
+    def format(self, record):
+        if hasattr(record, "structured_data"):
+            return json.dumps(record.structured_data)
+        return json.dumps({
+            "level": record.levelname,
+            "message": record.getMessage(),
+        })
+
+
+# Configure structured JSON logging to stdout.
 logger = logging.getLogger("mp071-api")
+logger.setLevel(logging.INFO)
+
+handler = logging.StreamHandler(sys.stdout)
+handler.setFormatter(JsonFormatter())
+
+logger.handlers.clear()
+logger.addHandler(handler)
+logger.propagate = False
+
 
 # The same settings file the training code reads, so the API and training
 # always agree on the model file and the feature names.
@@ -49,21 +70,30 @@ class WaterDemandRequest(BaseModel):
     """
 
     # Client rule 1: more than 500 occupied flats is impossible -> le=500.
-    flats_occupied: int = Field(..., ge=0, le=500,
-                                description="Flats with people living")
+    flats_occupied: int = Field(
+        ..., ge=0, le=500, description="Flats with people living"
+    )
+
     # Client rule 2: a temperature below 4 deg C is a typing mistake -> ge=4.
-    temp_c: float = Field(..., ge=4, description="Maximum temperature, deg C")
+    temp_c: float = Field(
+        ..., ge=4, description="Maximum temperature, deg C"
+    )
 
     # Our own common-sense limits (not client rules): no negative areas or
     # counts, a percentage stays within 0-100, a day has at most 24 hours.
     # A negative supply_hours also stops an old -999 sentinel getting in.
-    garden_area_m2: float = Field(..., ge=0,
-                                  description="Garden area watered that day, m2")
-    tank_level_morning_pct: float = Field(..., ge=0, le=100,
-                                          description="Overhead tank level at 6 am, %")
-    leak_complaints: int = Field(..., ge=0, description="Open leak complaints")
-    supply_hours: float = Field(..., ge=0, le=24,
-                                description="Hours of municipal supply")
+    garden_area_m2: float = Field(
+        ..., ge=0, description="Garden area watered that day, m2"
+    )
+    tank_level_morning_pct: float = Field(
+        ..., ge=0, le=100, description="Overhead tank level at 6 am, %"
+    )
+    leak_complaints: int = Field(
+        ..., ge=0, description="Open leak complaints"
+    )
+    supply_hours: float = Field(
+        ..., ge=0, le=24, description="Hours of municipal supply"
+    )
 
     # Only the spellings the model was trained on. Without this, a typo like
     # "tower b" would not fail: the encoder would silently ignore it and the
@@ -103,6 +133,8 @@ def predict(request: WaterDemandRequest):
         "prediction_litres_per_day": round(litres, 1),
         "status": "success",
     }
-    logger.info(json.dumps(log_record))
+
+    logger.info("prediction", extra={"structured_data": log_record})
 
     return PredictionResponse(prediction=round(litres, 1))
+
